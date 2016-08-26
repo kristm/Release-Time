@@ -39,8 +39,6 @@ class App < Sinatra::Base
   end
 
   get "/" do
-    puts "="*100
-    puts "#{App.cache.inspect}"
     "#{App.cache.inspect}"
   end
 
@@ -49,9 +47,6 @@ class App < Sinatra::Base
   end
 
   post "/start" do
-    puts "M"*200
-    puts params.inspect
-    puts "M"*200
     App.cache['start'] = Time.now
   end
 
