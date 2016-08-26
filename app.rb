@@ -7,7 +7,10 @@ class App < Sinatra::Base
   set :cache, {}
 
   configure do
-    set :slack_incoming_url, "https://hooks.slack.com/services/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"
+    Dotenv.load if ENV['RACK_ENV'] == 'development'
+    set :slack_incoming_url, ENV['SLACK_INCOMING_URL']
+    set :slack_start_timer_token, ENV['SLACK_START_TIMER_TOKEN']
+    set :slack_stop_timer_token, ENV['SLACK_STOP_TIMER_TOKEN']
   end
 
   helpers do
@@ -17,7 +20,7 @@ class App < Sinatra::Base
                       channel: "#release-test",
                       username: "Release time",
                       text: "_#{computed_time}_",
-                      icon_emoji: ":krist:"
+                      icon_emoji: ":pangasar:"
                     }.to_json,
                     headers: {'content-type' => 'application/json'}
                    )
@@ -34,7 +37,7 @@ class App < Sinatra::Base
     end
 
     def has_the_time?
-      !App.cache.empty? and App.cache.key? 'start' and App.cache.key? 'stop'
+      App.cache.key? 'start' and App.cache.key? 'stop' and App.cache['stop'] > App.cache['start']
     end
   end
 
@@ -52,5 +55,6 @@ class App < Sinatra::Base
 
   post "/stop" do
     App.cache['stop'] = Time.now
+    send_time_to_slack
   end
 end
