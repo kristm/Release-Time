@@ -11,6 +11,8 @@ class App < Sinatra::Base
   end
 
   get "/" do
+    puts "="*100
+    puts "#{App.cache.inspect}"
     "#{App.cache.inspect}"
   end
 
