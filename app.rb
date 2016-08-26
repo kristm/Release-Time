@@ -50,6 +50,9 @@ class App < Sinatra::Base
   end
 
   post "/start" do
+    puts "===="*40
+    puts params['token']
+    puts "===="*40
     App.cache['start'] = Time.now
   end
 
