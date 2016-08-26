@@ -11,16 +11,19 @@ class App < Sinatra::Base
     set :slack_incoming_url, ENV['SLACK_INCOMING_URL']
     set :slack_start_timer_token, ENV['SLACK_START_TIMER_TOKEN']
     set :slack_stop_timer_token, ENV['SLACK_STOP_TIMER_TOKEN']
+    set :slack_channel, ENV['SLACK_CHANNEL']
+    set :slack_username, ENV['SLACK_USERNAME']
+    set :slack_avatar, ENV['SLACK_AVATAR']
   end
 
   helpers do
     def send_time_to_slack
       HTTParty.post(settings.slack_incoming_url,
                     body: {
-                      channel: "#release-test",
-                      username: "Release time",
+                      channel: settings.slack_channel,
+                      username: settings.slack_username,
                       text: "_#{computed_time}_",
-                      icon_emoji: ":pangasar:"
+                      icon_emoji: settings.slack_avatar
                     }.to_json,
                     headers: {'content-type' => 'application/json'}
                    )
@@ -50,11 +53,11 @@ class App < Sinatra::Base
   end
 
   post "/start" do
-    App.cache['start'] = Time.now unless settings.slack_start_timer_token == params['token']
+    App.cache['start'] = Time.now if settings.slack_start_timer_token == params['token']
   end
 
   post "/stop" do
-    unless settings.slack_stop_timer_token == params['token']
+    if settings.slack_stop_timer_token == params['token']
       App.cache['stop'] = Time.now
       send_time_to_slack
     end
