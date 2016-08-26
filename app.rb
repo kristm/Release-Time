@@ -50,14 +50,13 @@ class App < Sinatra::Base
   end
 
   post "/start" do
-    puts "===="*40
-    puts params['token']
-    puts "===="*40
-    App.cache['start'] = Time.now
+    App.cache['start'] = Time.now unless settings.slack_start_timer_token == params['token']
   end
 
   post "/stop" do
-    App.cache['stop'] = Time.now
-    send_time_to_slack
+    unless settings.slack_stop_timer_token == params['token']
+      App.cache['stop'] = Time.now
+      send_time_to_slack
+    end
   end
 end
