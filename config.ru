@@ -4,4 +4,4 @@ require './app'
 #use Sass::Plugin::Rack
 $stdout.sync = true
 
-run Sinatra::Application
+run App
