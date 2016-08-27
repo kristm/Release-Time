@@ -1,10 +1,10 @@
 require 'rubygems'
 require 'sinatra'
 require 'httparty'
+require 'pstore'
 require 'dotenv'
 
 class App < Sinatra::Base
-  set :cache, {}
 
   configure do
     Dotenv.load if ENV['RACK_ENV'] == 'development'
@@ -30,22 +30,21 @@ class App < Sinatra::Base
     end
 
     def computed_time
-      if App.cache['stop'] and App.cache['stop'] > App.cache['start']
-        t = App.cache['stop'] - App.cache['start']
-        mm, ss = t.divmod(60)
-        hh, mm = mm.divmod(60)
-        dd, hh = hh.divmod(24)
-        "%d days, %d hours, %d minutes and %d seconds" % [dd, hh, mm, ss]
-      end
+      timer = DB[:times].last
+      t = timer[:stop] - timer[:start]
+      mm, ss = t.divmod(60)
+      hh, mm = mm.divmod(60)
+      dd, hh = hh.divmod(24)
+      "%d days, %d hours, %d minutes and %d seconds" % [dd, hh, mm, ss]
     end
 
     def has_the_time?
-      App.cache.key? 'start' and App.cache.key? 'stop' and App.cache['stop'] > App.cache['start']
+      !DB[:times].empty? and DB[:times].last[:stop] > DB[:times].last[:start]
     end
   end
 
   get "/" do
-    "#{App.cache.inspect}"
+    "#{DB.inspect}"
   end
 
   get "/slack" do
@@ -53,13 +52,19 @@ class App < Sinatra::Base
   end
 
   post "/start" do
-    App.cache['start'] = Time.now if settings.slack_start_timer_token == params['token']
+    if settings.slack_start_timer_token == params['token']
+      DB[:times] << { start: Time.now }
+
+      200
+    end
   end
 
   post "/stop" do
     if settings.slack_stop_timer_token == params['token']
-      App.cache['stop'] = Time.now
+      DB[:times].last.merge! stop: Time.now
       send_time_to_slack
+
+      200
     end
   end
 end
