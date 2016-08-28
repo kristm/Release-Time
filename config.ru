@@ -5,7 +5,7 @@ DB = PStore.new('data.pstore')
 class DBTransactionMiddleware
   def initialize(app)
     @app = app
-    #DB.transaction { DB[:times] ||= [] }
+    DB.transaction { DB[:times] ||= [] }
   end
 
   def call(env)
