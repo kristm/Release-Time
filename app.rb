@@ -1,13 +1,22 @@
 require 'rubygems'
 require 'sinatra'
 require 'httparty'
-require 'pstore'
+require 'redis'
 require 'dotenv'
 
 class App < Sinatra::Base
 
-  configure do
+  configure :production do
+    $redis = Redis.new(url: ENV["REDISTOGO_URL"], driver: :hiredis)
+  end
+
+  configure :development do
     Dotenv.load if ENV['RACK_ENV'] == 'development'
+
+    $redis = Redis.new
+  end
+
+  configure do
     set :slack_incoming_url, ENV['SLACK_INCOMING_URL']
     set :slack_start_timer_token, ENV['SLACK_START_TIMER_TOKEN']
     set :slack_stop_timer_token, ENV['SLACK_STOP_TIMER_TOKEN']
@@ -30,8 +39,8 @@ class App < Sinatra::Base
     end
 
     def computed_time
-      timer = DB[:times].last
-      t = timer[:stop] - timer[:start]
+      timer = last_record
+      t = Time.parse(timer["stop"]) - Time.parse(timer["start"]) #why redis no store time?
       mm, ss = t.divmod(60)
       hh, mm = mm.divmod(60)
       dd, hh = hh.divmod(24)
@@ -39,21 +48,36 @@ class App < Sinatra::Base
     end
 
     def has_the_time?
-      !DB[:times].empty? and DB[:times].last[:stop] > DB[:times].last[:start]
+      last_record["stop"] >= last_record["start"]
+    rescue
+      false
+    end
+
+    def new_record_id
+      "release:#{Time.now.to_i}"
+    end
+
+    def last_record_id
+      $redis.smembers('times').last
+    end
+
+    def last_record
+      $redis.hgetall last_record_id
     end
   end
 
   get "/" do
-    "#{DB.inspect}"
+    "#{$redis.smembers('times').map { |time| $redis.hgetall time }.flatten}"
   end
 
-  get "/slack" do
-    send_time_to_slack if has_the_time?
+  get "/check" do
+    "#{computed_time}" if has_the_time?
   end
 
   post "/start" do
     if settings.slack_start_timer_token == params['token']
-      DB[:times] << { start: Time.now }
+      $redis.hmset(new_record_id, "start", Time.now)
+      $redis.sadd 'times', new_record_id
 
       200
     end
@@ -61,7 +85,7 @@ class App < Sinatra::Base
 
   post "/stop" do
     if settings.slack_stop_timer_token == params['token']
-      DB[:times].last.merge! stop: Time.now
+      $redis.hmset last_record_id, "stop", Time.now
       send_time_to_slack
 
       200
