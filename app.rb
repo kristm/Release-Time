@@ -1,8 +1,8 @@
 require 'rubygems'
 require 'sinatra'
-require 'httparty'
 require 'redis'
 require 'dotenv'
+require './helpers'
 
 class App < Sinatra::Base
 
@@ -11,7 +11,7 @@ class App < Sinatra::Base
   end
 
   configure :development do
-    Dotenv.load if ENV['RACK_ENV'] == 'development'
+    Dotenv.load
 
     $redis = Redis.new
   end
@@ -26,44 +26,7 @@ class App < Sinatra::Base
   end
 
   helpers do
-    def send_time_to_slack
-      HTTParty.post(settings.slack_incoming_url,
-                    body: {
-                      channel: settings.slack_channel,
-                      username: settings.slack_username,
-                      text: "_#{computed_time}_",
-                      icon_emoji: settings.slack_avatar
-                    }.to_json,
-                    headers: {'content-type' => 'application/json'}
-                   )
-    end
-
-    def computed_time
-      timer = last_record
-      t = Time.parse(timer["stop"]) - Time.parse(timer["start"]) #why redis no store time?
-      mm, ss = t.divmod(60)
-      hh, mm = mm.divmod(60)
-      dd, hh = hh.divmod(24)
-      "%d days, %d hours, %d minutes and %d seconds" % [dd, hh, mm, ss]
-    end
-
-    def has_the_time?
-      last_record["stop"] >= last_record["start"]
-    rescue
-      false
-    end
-
-    def new_record_id
-      "release:#{Time.now.to_i}"
-    end
-
-    def last_record_id
-      $redis.smembers('times').last
-    end
-
-    def last_record
-      $redis.hgetall last_record_id
-    end
+    include Helpers
   end
 
   get "/" do
@@ -71,7 +34,7 @@ class App < Sinatra::Base
   end
 
   get "/check" do
-    "#{computed_time}" if has_the_time?
+    "#{compute_time last_record}" if has_the_time?
   end
 
   post "/start" do
