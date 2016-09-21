@@ -31,7 +31,8 @@ module Helpers
   end
 
   def last_record_id
-    $redis.smembers('times').last
+    #TODO: use redis sorted sets
+    $redis.smembers('times').sort.last
   end
 
   def last_record
