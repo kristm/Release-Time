@@ -30,11 +30,12 @@ class App < Sinatra::Base
   end
 
   get "/" do
-    "#{$redis.smembers('times').map { |time| $redis.hgetall time }.flatten}"
+    times = $redis.smembers('times').flat_map { |time| parse_time! $redis.hgetall(time) }
+    haml :index, :locals => { times: times.map { | t | t.merge({"total" => compute_time(t)}) } }
   end
 
   get "/check" do
-    "#{compute_time last_record}" if has_the_time?
+    "#{compute_time last_record}" if has_the_time? last_record
   end
 
   post "/start" do

@@ -13,15 +13,22 @@ module Helpers
                  )
   end
 
+  def parse_time!(record)
+    record.each { | k, v | record[k] = Time.parse v }
+  end
+
   def compute_time(timer)
-    t = Time.parse(timer["stop"]) - Time.parse(timer["start"]) #why redis no store time?
+    return unless has_the_time? timer
+    parse_time!(timer) unless timer["start"].class == Time
+
+    t = timer["stop"] - timer["start"]
     mm, ss = t.divmod(60)
     hh, mm = mm.divmod(60)
     "%d hours, %d minutes and %d seconds" % [hh, mm, ss]
   end
 
-  def has_the_time?
-    last_record["stop"] >= last_record["start"]
+  def has_the_time?(timer)
+    timer["stop"] >= timer["start"]
   rescue
     false
   end
