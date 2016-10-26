@@ -30,7 +30,7 @@ class App < Sinatra::Base
   end
 
   get "/" do
-    times = $redis.smembers('times').flat_map { |time| parse_time! $redis.hgetall(time) }
+    times = $redis.smembers('times').sort.flat_map { |time| parse_time! $redis.hgetall(time) }
     haml :index, :locals => { times: times.map { | t | t.merge({"total" => compute_time(t)}) } }
   end
 
