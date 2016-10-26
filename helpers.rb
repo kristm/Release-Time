@@ -28,7 +28,10 @@ module Helpers
   end
 
   def compute_time_in_english(timer)
-    "%d hours, %d minutes and %d seconds" % compute_time(timer)
+    times = compute_time(timer)
+    unless times.nil?
+      "%d hours, %d minutes and %d seconds" % times
+    end
   end
 
   def has_the_time?(timer)
