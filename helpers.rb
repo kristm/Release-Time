@@ -6,7 +6,7 @@ module Helpers
                   body: {
                     channel: settings.slack_channel,
                     username: settings.slack_username,
-                    text: "_#{compute_time last_record}_",
+                    text: "_#{compute_time_in_english last_record}_",
                     icon_emoji: settings.slack_avatar
                   }.to_json,
                   headers: {'content-type' => 'application/json'}
@@ -24,7 +24,11 @@ module Helpers
     t = timer["stop"] - timer["start"]
     mm, ss = t.divmod(60)
     hh, mm = mm.divmod(60)
-    "%d hours, %d minutes and %d seconds" % [hh, mm, ss]
+    [hh, mm, ss]
+  end
+
+  def compute_time_in_english(timer)
+    "%d hours, %d minutes and %d seconds" % compute_time(timer)
   end
 
   def has_the_time?(timer)
