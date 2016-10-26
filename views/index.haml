@@ -29,7 +29,8 @@
       dd > div {
         flex: 1 1 5rem;
         text-align: center;
-        padding: 1rem;
+        padding: 1.5rem 1rem 1rem;
+        position: relative;
         border: 4px solid orangered;
         background: crimson;
         box-shadow: inset 4px 4px 0 4px darkred;
@@ -54,15 +55,50 @@
         transform: skewY(45deg);
         background-color: darkred;
       }
-      .total { flex-grow: 2; font-weight: bold; font-size: larger }
+      dd:first-child > .start:before {
+        content: 'start';
+        position: absolute;
+        top: 5px;
+        left: 8px;
+        color: crimson;
+        background: darkred;
+        padding: 0 1rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: .8rem;
+      }
+      dd:first-child > .stop:before {
+        content: 'end';
+        position: absolute;
+        top: 5px;
+        left: 8px;
+        color: crimson;
+        background: darkred;
+        padding: 0 1rem;
+        font-weight: bold;
+        text-transform: uppercase;
+        font-size: .8rem;
+      }
+      .total {
+        flex-grow: 2;
+        font-weight: bold;
+        font-size: larger;
+        background: coral;
+        color: darkred;
+      }
 
       @media (max-width: 800px) {
+        main { width: 100% }
+        dl:before, dl:after { content: none }
+        dd > div { border: none }
         .start { order: 1; }
         .end { order: 2; }
         .total {
           flex-grow: 2;
           flex-basis: 100%;
           order: 3;
+          font-size: 1.5rem;
+          padding: 1rem;
         }
       }
   %body
