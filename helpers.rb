@@ -6,7 +6,7 @@ module Helpers
                   body: {
                     channel: settings.slack_channel,
                     username: settings.slack_username,
-                    text: "_#{compute_time_in_english last_record}_",
+                    text: ":heart: _#{compute_time_in_english last_record}_ :heart:",
                     icon_emoji: settings.slack_avatar
                   }.to_json,
                   headers: {'content-type' => 'application/json'}
