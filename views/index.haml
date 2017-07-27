@@ -41,6 +41,9 @@
         line-height: 0.4rem;
         text-align: left;
       }
+      .total.win:after {
+        content: "🏆";
+      }
 
       @media (max-width: 1000px) {
         main { width: 100% }
@@ -65,5 +68,6 @@
           - if t.keys.size < 3
             - next
           %dd
+            - flag = t.delete 'win'
             - t.each do | key, value |
-              %div{class: key}= value
+              %div{class: "#{key} #{flag ? 'win' : ''}"}= value
