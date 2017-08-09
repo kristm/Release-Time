@@ -63,14 +63,20 @@ class App < Sinatra::Base
   post "/deploy/:app" do
     return 503 if settings.slack_enable_deploy_watch.nil?
 
-    if [:qlearn,
-        :api,
-        :qlink,
-        :video_payment,
-        :qlink_react].map { |app| settings.send("slack_deploy_#{app}_token".to_sym) }.include? params['token'] and !$redis.hgetall(last_record_id).key?("stop") # check tokens and if there's an active release
+    deploy_tokens = [
+      settings.slack_deploy_qlearn_token,
+      settings.slack_deploy_api_token,
+      settings.slack_deploy_qlink_token,
+      settings.slack_deploy_video_payment_token,
+      settings.slack_deploy_qlink_react_token
+    ]
+
+    if deploy_tokens.include? params['token'] and !$redis.hgetall(last_record_id).key?("stop") # check tokens and if there's an active release
       $redis.hmset(last_record_id, params[:app], true)
       send_deploy_status_to_slack $redis.hgetall(last_record_id)
         .select { |key| RELEASE_APPS.include? key }
+    else
+      417
     end
   end
 
