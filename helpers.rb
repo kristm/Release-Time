@@ -38,7 +38,8 @@ module Helpers
   end
 
   def parse_time!(record)
-    record.each { | k, v | record[k] = Time.parse v }
+    record.select { |key| !RELEASE_APPS.include? key }
+      .each { | k, v | record[k] = Time.parse v }
   end
 
   def compute_time(timer)
@@ -52,7 +53,7 @@ module Helpers
   end
 
   def compute_time_in_english(timer)
-    times = compute_time(timer.select { |key| !RELEASE_APPS.include? key })
+    times = compute_time(timer)
     unless times.nil?
       "%d hours, %d minutes and %d seconds" % times
     end

@@ -54,7 +54,6 @@ class App < Sinatra::Base
         $redis.hmset(new_record_id, app, false)
       end
 
-      $redis.hmset(new_record_id, "start", Time.now)
       $redis.sadd 'times', new_record_id
 
       200
