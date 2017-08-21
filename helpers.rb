@@ -2,6 +2,8 @@ require 'httparty'
 
 module Helpers
   RELEASE_APPS = ["Api", "QLearn", "QLink-react", "Video-payment-qs", "QLink"]
+  RELEASE_STANDBY = 'standby'
+  RELEASE_STARTED = 'started'
 
   def send_time_to_slack
     HTTParty.post(settings.slack_incoming_url,
@@ -31,7 +33,7 @@ module Helpers
     deploy_status = "> Deploy status\n"
     deploy_status << app_status.map { | k, v | "#{k} #{v == 'true' ? ':white_check_mark:' : ':x:'}" }.join(" | ")
     if app_status.values.map { |state| state == "true" ? true : false }.reduce :&
-      $redis.set('test_status', 'started')
+      $redis.set('test_status', RELEASE_STARTED)
       deploy_status << "\n\n> :thumbsup: Release team you are cleared for take-off :reverse_thumbsup:"
     end
 
