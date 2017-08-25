@@ -36,10 +36,14 @@ class App < Sinatra::Base
   end
 
   get "/" do
-    times = $redis.smembers('times').sort.reverse.flat_map { |time| parse_time! $redis.hgetall(time) }
-    times.map!{ | t | t.merge({"total" => compute_time_in_english(t)}) }
-    times.sort_by { | t | t['total'] || '' }.last&.merge!({"win" => true})
-    haml :index, :locals => { times: times }
+    begin
+      times = $redis.smembers('times').sort.reverse.flat_map { |time| parse_time! $redis.hgetall(time) }
+      times.map!{ | t | t.merge({"total" => compute_time_in_english(t)}) }
+      times.sort_by { | t | t['total'] || '' }.last&.merge!({"win" => true})
+      haml :index, :locals => { times: times }
+    rescue
+      nil
+    end
   end
 
   get "/check" do
@@ -72,7 +76,7 @@ class App < Sinatra::Base
       settings.slack_deploy_qlink_react_token
     ]
 
-    if deploy_tokens.include? params['token'] and !$redis.hgetall(last_record_id).key?("stop") # check tokens and if there's an active release
+    if !params['token'].nil? and deploy_tokens.include? params['token'] and !$redis.hgetall(last_record_id).key?("stop") # check tokens and if there's an active release
       $redis.hmset(last_record_id, params[:app], true)
       send_deploy_status_to_slack $redis.hgetall(last_record_id)
         .select { |key| RELEASE_APPS.include? key }

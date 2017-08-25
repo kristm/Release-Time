@@ -3,13 +3,18 @@ GEM
   specs:
     coderay (1.1.1)
     dotenv (2.2.1)
+    fakeredis (0.6.0)
+      redis (~> 3.2)
     haml (5.0.1)
       temple (>= 0.8.0)
       tilt
     hiredis (0.6.1)
     httparty (0.15.6)
       multi_xml (>= 0.5.2)
+    metaclass (0.0.4)
     method_source (0.8.2)
+    mocha (1.3.0)
+      metaclass (~> 0.0.1)
     multi_xml (0.6.0)
     mustermann (1.0.0)
     pry (0.10.4)
@@ -34,9 +39,11 @@ PLATFORMS
 
 DEPENDENCIES
   dotenv
+  fakeredis
   haml
   hiredis
   httparty
+  mocha
   pry
   redis
   sinatra

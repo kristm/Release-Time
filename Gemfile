@@ -10,4 +10,6 @@ gem "dotenv"
 
 group :development, :test do
   gem "pry"
+  gem "fakeredis"
+  gem "mocha"
 end
