@@ -52,14 +52,15 @@ class App < Sinatra::Base
 
   post "/start" do
     if settings.slack_start_timer_token == params['token']
-      $redis.hmset(new_record_id, "start", Time.now)
+      new_entry = new_record_id
+      $redis.hmset(new_entry, "start", Time.now)
       $redis.set('test_status', RELEASE_STANDBY) # add flag for tracking release testing status. otherwise deploy notification will be too noisy every time app is redeployed
 
       RELEASE_APPS.each do |app|
-        $redis.hmset(new_record_id, app, false)
+        $redis.hmset(new_entry, app, false)
       end
 
-      $redis.sadd 'times', new_record_id
+      $redis.sadd 'times', new_entry
 
       200
     end
