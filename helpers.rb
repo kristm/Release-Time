@@ -4,7 +4,7 @@ module Helpers
   RELEASE_APPS = ["Api", "QLearn", "QLink-react", "Video-payment-qs", "QLink"]
   RELEASE_STANDBY = 'standby'
   RELEASE_STARTED = 'started'
-  RELASE_MESSAGE = ":thumbsup: All apps have been deployed to release branch! :reverse_thumbsup: \n _Please make sure all tests are passing before starting with the happy path_"
+  RELASE_MESSAGE = ":thumbsup: All apps have been deployed to release branch! :reverse_thumbsup: \n_Please make sure all tests are passing and for release jobs before starting with the happy path_\n(`LEGACY:` https://jenkins.quipper.net/view/Releases/, `CURRENT:` https://jenkins.quipper.net/job/release-microservices/)"
 
   def send_time_to_slack
     HTTParty.post(settings.slack_incoming_url,
