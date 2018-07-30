@@ -26,6 +26,7 @@ class App < Sinatra::Base
     set :slack_deploy_qlink_token, ENV['SLACK_DEPLOY_QLINK_TOKEN']
     set :slack_deploy_video_payment_token, ENV['SLACK_DEPLOY_VIDEO_PAYMENT_TOKEN']
     set :slack_deploy_qlink_react_token, ENV['SLACK_DEPLOY_QLINK_REACT_TOKEN']
+    set :slack_deploy_microservices_token, ENV['SLACK_DEPLOY_MICROSERVICES_TOKEN']
     set :slack_channel, ENV['SLACK_CHANNEL']
     set :slack_username, ENV['SLACK_USERNAME']
     set :slack_avatar, ENV['SLACK_AVATAR']
@@ -74,7 +75,8 @@ class App < Sinatra::Base
       settings.slack_deploy_api_token,
       settings.slack_deploy_qlink_token,
       settings.slack_deploy_video_payment_token,
-      settings.slack_deploy_qlink_react_token
+      settings.slack_deploy_qlink_react_token,
+      settings.slack_deploy_microservices_token
     ]
 
     if !params['token'].nil? and deploy_tokens.include? params['token'] and !$redis.hgetall(last_record_id).key?("stop") # check tokens and if there's an active release
