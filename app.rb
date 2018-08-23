@@ -71,11 +71,12 @@ class App < Sinatra::Base
     return 503 if settings.slack_enable_deploy_watch.nil? or $redis.get('test_status') == RELEASE_STARTED
 
     deploy_tokens = [
-      settings.slack_deploy_qlearn_token,
-      settings.slack_deploy_api_token,
-      settings.slack_deploy_qlink_token,
-      settings.slack_deploy_video_payment_token,
-      settings.slack_deploy_qlink_react_token,
+      # Ref: https://github.com/quipper/quipper/issues/15518
+      # settings.slack_deploy_qlearn_token,
+      # settings.slack_deploy_api_token,
+      # settings.slack_deploy_qlink_token,
+      # settings.slack_deploy_video_payment_token,
+      # settings.slack_deploy_qlink_react_token,
       settings.slack_deploy_microservices_token
     ]
 
