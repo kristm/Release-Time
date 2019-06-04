@@ -40,7 +40,7 @@ class App < Sinatra::Base
     begin
       times = $redis.smembers('times').sort.reverse.flat_map { |time| parse_time! $redis.hgetall(time) }
       times.map!{ | t | t.merge({"total" => compute_time_in_english(t)}) }
-      times.sort_by { | t | t['total'] || '' }.last&.merge!({"win" => true})
+      times.sort_by { |t| t['total'] ? t['total'][/^[0-9]+/].to_i : 0 }.last&.merge!({"win" => true})
       haml :index, :locals => { times: times }
     rescue
       nil
