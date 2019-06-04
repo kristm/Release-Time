@@ -1,8 +1,8 @@
 source "https://rubygems.org"
-ruby "2.3.1"
+ruby "2.5.0"
 
 gem "sinatra"
-gem "haml"
+gem "haml", "~> 5.0.4"
 gem "httparty"
 gem "redis"
 gem "hiredis"

@@ -5,7 +5,7 @@ GEM
     dotenv (2.2.1)
     fakeredis (0.6.0)
       redis (~> 3.2)
-    haml (5.0.1)
+    haml (5.0.4)
       temple (>= 0.8.0)
       tilt
     hiredis (0.6.1)
@@ -31,7 +31,7 @@ GEM
       rack-protection (= 2.0.0)
       tilt (~> 2.0)
     slop (3.6.0)
-    temple (0.8.0)
+    temple (0.8.1)
     tilt (2.0.8)
 
 PLATFORMS
@@ -40,7 +40,7 @@ PLATFORMS
 DEPENDENCIES
   dotenv
   fakeredis
-  haml
+  haml (~> 5.0.4)
   hiredis
   httparty
   mocha
@@ -49,7 +49,7 @@ DEPENDENCIES
   sinatra
 
 RUBY VERSION
-   ruby 2.3.1p112
+   ruby 2.5.0p0
 
 BUNDLED WITH
-   1.12.3
+   1.16.4

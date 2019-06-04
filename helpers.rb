@@ -1,4 +1,5 @@
 require 'httparty'
+require 'time'
 
 module Helpers
   RELEASE_APPS = ["Microservices"]
@@ -42,7 +43,7 @@ module Helpers
   end
 
   def parse_time!(record)
-    record.select { |key| !RELEASE_APPS.include? key }
+    record.select { |key| key[/^(start|stop)$/] }
       .each { | k, v | record[k] = Time.parse v }
   end
 
