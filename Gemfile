@@ -1,5 +1,5 @@
 source "https://rubygems.org"
-ruby "2.5.0"
+ruby File.read(File.join(File.dirname(__FILE__), ".ruby-version")).strip
 
 gem "sinatra"
 gem "haml", "~> 5.0.4"
