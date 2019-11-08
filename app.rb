@@ -93,6 +93,7 @@ class App < Sinatra::Base
     if settings.slack_stop_timer_token == params['token']
       $redis.hmset last_record_id, "stop", Time.now
       send_time_to_slack
+      send_jp_holiday_notification_to_slack
 
       200
     end
