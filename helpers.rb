@@ -1,5 +1,6 @@
 require 'httparty'
 require 'time'
+require 'date'
 
 module Helpers
   RELEASE_APPS = ["Microservices"]
@@ -81,5 +82,23 @@ module Helpers
 
   def last_record
     $redis.hgetall last_record_id
+  end
+
+  def date_next_monday
+    # 0 = Sunday, 1 = Monday, 2 = Monday
+    date_today = Date.today
+    days_until_monday = (1 - date_today.wday) % 7
+    date_today + days_until_monday
+  end
+
+  def jp_holiday_on_monday
+    jp_holidays = HTTParty.get("https://holidays-jp.github.io/api/v1/date.json").parsed_response
+
+    formatted_monday = date_next_monday.strftime("%Y-%m-%d")
+    holiday = jp_holidays[formatted_monday]
+
+    if holiday
+      [formatted_monday, holiday]
+    end
   end
 end
